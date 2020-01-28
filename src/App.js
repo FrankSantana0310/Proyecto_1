@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import './bootstrap.min.css';
 import './App.css';
+import Header from './components/Header';
+import NuevaCita from './components/NuevaCita';
+import ListaCitas from './components/ListaCitas';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    citas: [],
+  }
+
+  crearNuevaCita = (data) => {
+   
+    this.setState({
+      citas: [...this.state.citas, data]
+    })
+  }
+
+  componentDidMount(){
+    const citasLS = localStorage.getItem('citas');
+    if(citasLS){
+      this.setState({
+        citas: JSON.parse(citasLS )
+      })
+    }
+  }
+  componentDidUpdate(){
+    localStorage.setItem( 'citas',JSON.stringify([...this.state.citas]))
+  }
+
+  //Eliminar las citas.
+  eliminarCitas = id => {
+    const newCita = this.state.citas.filter(cita => (
+      cita.id !== id
+    ))
+    this.setState({
+      citas : newCita
+    })
+  }
+
+  render(){
+    const citas = [...this.state.citas]
+    return (
+      <div className='container'>
+        <Header title='Administrador Pacientes Veterianria' />
+       <div className='row'>
+          <div className='col-md-10 mx-auto'>
+            <NuevaCita crearNuevaCita={this.crearNuevaCita}/>
+          </div>
+          <div className='mt-5 col-md-10 mx-auto'>
+                <ListaCitas eliminarCitas={this.eliminarCitas}  citas={citas}/>
+          </div>
+       </div>
+      </div>
+      );
+  }
 }
 
 export default App;
